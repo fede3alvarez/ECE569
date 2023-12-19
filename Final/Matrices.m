@@ -151,55 +151,40 @@ R3i = [cos(Theta_a)  sin(Theta_a)  0
 
 % This is based on Manual Calculations done in the test
 
-syms rho m1 m2 m3 I1 I2 I3
+syms m1 m2 m3 I1 I2 I3
 
-%rho =
-
-m1_num = 2*rho*(D_a^3);
-m2_num = 2*rho*(D_b^3);
-m3_num = 2*rho*(A_f^3);
  
-I1_num = [(5/12)*m1*(D_a^2)  0                  0
-          0                  (5/12)*m1*(D_a^2)  0
-          0                  0                  (1/6)*m1*(D_a^2)];
+I1  = [(5/12)*m1*(D_a^2)  0                  0
+       0                  (5/12)*m1*(D_a^2)  0
+       0                  0                  (1/6)*m1*(D_a^2)];
 
-I2_num  = [(5/12)*m2*(D_b^2)  0                  0
-           0                  (5/12)*m2*(D_b^2)  0
-           0                  0                  (1/6)*m2*(D_b^2)];
+I2  = [(5/12)*m2*(D_b^2)  0                  0
+       0                  (5/12)*m2*(D_b^2)  0
+       0                  0                  (1/6)*m2*(D_b^2)];
 
-I3_num  = [(1/6)*m3*(A_f^2)  0                  0
-           0                 (5/12)*m3*(A_f^2)  0
-           0                 0                  (5/12)*m3*(A_f^2)];
+I3  = [(1/6)*m3*(A_f^2)  0                  0
+       0                 (5/12)*m3*(A_f^2)  0
+       0                 0                  (5/12)*m3*(A_f^2)];
 
 
 D3 = m1*(Jv1i)*Jv1 + (Jw1i)*R1*I1*(R1i)*Jw1 ...
    + m2*(Jv2i)*Jv2 + (Jw2i)*R2*I2*(R2i)*Jw2 ...
    + m3*(Jv3i)*Jv3 + (Jw3i)*R3*I3*(R3i)*Jw3;
 
-D3_num = m1*(Jv1i)*Jv1 + (Jw1i)*R1*I1_num*(R1i)*Jw1 ...
-       + m2*(Jv2i)*Jv2 + (Jw2i)*R2*I2_num*(R2i)*Jw2 ...
-       + m3*(Jv3i)*Jv3 + (Jw3i)*R3*I3_num*(R3i)*Jw3;
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Defining Generalized Coordonates
+% Defining Generalized Coordonates & Derivatives
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-q1 = Theta_a;
-q2 = 3*pi/2;
-q3 = A_f;
+syms Theta_a_dot A_f_dot Theta_a_double_dot A_f_double_dot
 
-q  = [q1; q2; q3];
-qi = [q1 q2 q3];
-
-% Defining Generalized Derivatives Coordonates
-syms Theta_a_dot A_f_dot
+% Generalized Coordonates
+q  = [Theta_a; 3*pi/2; A_f];
 q_dot = [Theta_a_dot; 0 ;A_f_dot];
-qi_dot = [Theta_a_dot 0 A_f_dot];
-
-% Defining Generalized Derivatives 2nd Coordonates
-syms Theta_a_double_dot A_f_double_dot
 q_double_dot = [Theta_a_double_dot; 0 ;A_f_double_dot];
+
+% Transposes
+qi = [Theta_a; 3*pi/2; A_f];
+qi_dot = [Theta_a_dot 0 A_f_dot];
 qi_double_dot = [Theta_a_double_dot 0 A_f_double_dot];
 
 
@@ -215,17 +200,17 @@ K = (1/2)*qi_dot*D3*q_dot;
 % This is based on Manual Calculations done in the test
 
 % Splitting in columns for ease of readability
-C_col1=[(A_f*A_f_dot*(m1_num+m2_num+(17/12)*m3_num))
-        (A_f*A_f_dot*(m2_num+(17/12)*m3_num))
-        A_f*Theta_a_dot*(m1_num+m2_num+(17/12)*m3_num)-A_f*A_f_dot*m3_num];
+C_col1=[(A_f*A_f_dot*(m1+m2+(17/12)*m3))
+        (A_f*A_f_dot*(m2+(17/12)*m3))
+        A_f*Theta_a_dot*(m1+m2+(17/12)*m3)-A_f*A_f_dot*m3];
 
-C_col2 = [(A_f*A_f_dot*(m2_num+(17/12)*m3_num))
-          (A_f*A_f_dot*(m2_num+(17/12)*m3_num))
-          (A_f*Theta_a_dot*(m2_num+(17/12)*m3_num)-A_f*A_f_dot*m3_num)];
+C_col2 = [(A_f*A_f_dot*(m2+(17/12)*m3))
+          (A_f*A_f_dot*(m2+(17/12)*m3))
+          (A_f*Theta_a_dot*(m2+(17/12)*m3)-A_f*A_f_dot*m3)];
 
-C_col3 = [-(A_f*Theta_a_dot*(m1_num+m2_num+(17/12)*m3_num))
-           (A_f*Theta_a_dot*(m2_num+(17/12)*m3_num))
-           ((-1/2)*Theta_a_dot*m3_num+A_f*Theta_a_dot*m3_num)];
+C_col3 = [-(A_f*Theta_a_dot*(m1+m2+(17/12)*m3))
+           (A_f*Theta_a_dot*(m2+(17/12)*m3))
+           ((-1/2)*Theta_a_dot*m3+A_f*Theta_a_dot*m3)];
 
 C = [C_col1 C_col2 C_col3];
 
@@ -247,14 +232,95 @@ syms Tau
 Tau = D3*q_double_dot + C*q_dot + g_p;
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Paramter required to graph Tau
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Robot Mesurements in inches
+D_a_num = 14;
+D_b_num = 18;
+
+% Update Tau with values
+Tau_num = subs(Tau,D_a,D_a_num);
+Tau_num = subs(Tau_num,D_b,D_b_num);
+
+rho = 0.1; % Aluminium density in lb / in^3
+
+m1_num = 2*rho*(D_a_num^3);
+m2_num = 2*rho*(D_b_num^3);
+m3_num = 2*rho*(A_f^3);
+
+% Update Tau with values
+Tau_num = subs(Tau_num,m1,m1_num);
+Tau_num = subs(Tau_num,m2,m2_num);
+Tau_num = subs(Tau_num,m3,m3_num); % Update for A_f will be done with q
+
+% Generalized Coordonates
+
+% We will assume Theta_a follows the a behaviour of the shape
+%       y = -(x^2)+2*pi*x
+syms Theta_a_num
+Theta_a_num = -(Theta_a^2)+2*pi*Theta_a;
+Theta_a_dot_num = diff(Theta_a_num, Theta_a);
+Theta_a_double_dot_num = diff(Theta_a_dot_num, Theta_a);
+
+% Update Tau with values
+Tau_num = subs(Tau_num,Theta_a,Theta_a_num);
+Tau_num = subs(Tau_num,Theta_a_dot,Theta_a_dot_num);
+Tau_num = subs(Tau_num,Theta_a_double_dot,Theta_a_double_dot_num);
 
 
+% We will assume A_f follows the a behaviour of the shape
+%       y = x + 2
+syms A_f_num A_f_dot_num A_f_double_dot_num
+A_f_num = A_f + 2;
+A_f_dot_num = diff(A_f_num, A_f);
+A_f_double_dot_num = diff(A_f_dot_num, Theta_a);
+
+% Update Tau with values
+Tau_num = subs(Tau_num,A_f,A_f_num);
+Tau_num = subs(Tau_num,A_f_dot,A_f_dot_num);
+Tau_num = subs(Tau_num,A_f_double_dot,A_f_double_dot_num);
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Graphs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Figure 1 - q(1) - Theta_a
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+figure(1)
+subplot(3,1,1)
+plot(rand(1,10),'.-');
+title('q(1) - \theta_a') 
+subplot(3,1,2)
+plot(rand(1, 10),'.-');
+title('dq(1) - d\theta_a') 
+subplot(3,1,3)
+plot(rand(1, 15),'.-');
+title('ddq(1) - dd\theta_a') 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Figure X - q(2) - alpha_a 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Since alpha is a constant, no graph will be plotted.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Figure 3 - q(3) - A_f
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-
+figure(3)
+subplot(3,1,1)
+plot(rand(1,10),'.-');
+title('q(3) - A_f') 
+subplot(3,1,2)
+plot(rand(1, 10),'.-');
+title('dq(3) - dA_f') 
+subplot(3,1,3)
+plot(rand(1, 15),'.-');
+title('ddq(3) - ddA_f') 
 
