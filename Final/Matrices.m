@@ -206,7 +206,7 @@ qi_double_dot = [Theta_a_double_dot 0 A_f_double_dot];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Finding the Kinematic Energy:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-K = (1/2)*qi_dot*D3*q_dot
+K = (1/2)*qi_dot*D3*q_dot;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -214,9 +214,10 @@ K = (1/2)*qi_dot*D3*q_dot
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This is based on Manual Calculations done in the test
 
-C_col1 = [(A_f*A_f_dot*(m1_num+m2_num+(17/12)*m3_num))
-          (A_f*A_f_dot*(m2_num+(17/12)*m3_num))
-          (A_f*Theta_a_dot*(m1_num+m2_num+(17/12)*m3_num)-A_f*A_f_dot*m3_num)]
+% Splitting in columns for ease of readability
+C_col1=[(A_f*A_f_dot*(m1_num+m2_num+(17/12)*m3_num))
+        (A_f*A_f_dot*(m2_num+(17/12)*m3_num))
+        A_f*Theta_a_dot*(m1_num+m2_num+(17/12)*m3_num)-A_f*A_f_dot*m3_num];
 
 C_col2 = [(A_f*A_f_dot*(m2_num+(17/12)*m3_num))
           (A_f*A_f_dot*(m2_num+(17/12)*m3_num))
@@ -232,6 +233,8 @@ C = [C_col1 C_col2 C_col3];
 % Finding the Gravity Vector
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This is based on Manual Calculations done in the test
+% Note: This makes since,a s the robot does not move on the z-axis
+g_p = zeros(3,1);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -241,7 +244,7 @@ C = [C_col1 C_col2 C_col3];
 % Note: D(q)*q_double_dot + C(q,q_dot)*q_dot + g(p) = Tau (Eq. 6.66)
 
 syms Tau
-Tau = D3*q_double_dot + C
+Tau = D3*q_double_dot + C*q_dot + g_p;
 
 
 
