@@ -271,9 +271,9 @@ Tau_num = subs(Tau_num,Theta_a_double_dot,Theta_a_double_dot_num);
 
 
 % We will assume A_f follows the a behaviour of the shape
-%       y = x + 2
+%       y = x/10 + 2
 syms A_f_num A_f_dot_num A_f_double_dot_num
-A_f_num = A_f + 2;
+A_f_num = A_f/10 + 2;
 A_f_dot_num = diff(A_f_num, A_f);
 A_f_double_dot_num = diff(A_f_dot_num, Theta_a);
 
@@ -291,16 +291,41 @@ Tau_num = subs(Tau_num,A_f_double_dot,A_f_double_dot_num);
 % Figure 1 - q(1) - Theta_a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Use values of Theta_a of [0;10]
+x = 0:10;
+Theta_a_y = subs(Theta_a_num,Theta_a,x);
+Theta_a_dot_y = subs(Theta_a_dot_num,Theta_a,x);
+Theta_a_double_dot_y = subs(Theta_a_double_dot_num,Theta_a,x);
+Tau_y_Theta_a = subs(Tau_num,Theta_a,x);
+
+Tau_y_Theta_a = subs(Tau_y_Theta_a,A_f,1);
+
 figure(1)
-subplot(3,1,1)
-plot(rand(1,10),'.-');
+subplot(4,1,1)
+plot(x,Theta_a_y,'.-');
 title('q(1) - \theta_a') 
-subplot(3,1,2)
-plot(rand(1, 10),'.-');
+grid on
+
+subplot(4,1,2)
+plot(x,Theta_a_dot_y,'.-');
 title('dq(1) - d\theta_a') 
-subplot(3,1,3)
-plot(rand(1, 15),'.-');
+grid on
+
+subplot(4,1,3)
+plot(x,Theta_a_double_dot_y,'.-');
 title('ddq(1) - dd\theta_a') 
+grid on
+
+subplot(4,1,4)
+plot(x,Tau_y_Theta_a(1,:),'.-');
+title('\tau')
+grid on
+
+% txt = {'A_f (a(3)) was set constant for ease of comparsion',...
+%        ' ',...
+%        'Results are expected as a Constant Acceleration',...
+%        'means a constant force is exerced on the robot'};
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Figure X - q(2) - alpha_a 
@@ -313,14 +338,32 @@ title('ddq(1) - dd\theta_a')
 % Figure 3 - q(3) - A_f
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure(3)
-subplot(3,1,1)
-plot(rand(1,10),'.-');
-title('q(3) - A_f') 
-subplot(3,1,2)
-plot(rand(1, 10),'.-');
-title('dq(3) - dA_f') 
-subplot(3,1,3)
-plot(rand(1, 15),'.-');
-title('ddq(3) - ddA_f') 
+% Use values of Theta_a of [0;10]
+x = 0:10;
+A_f_y = subs(A_f_num,A_f,x);
+A_f_dot_y = subs(A_f_dot_num,A_f,x);
+A_f_double_dot_y = subs(A_f_double_dot_num,A_f,x);
+Tau_y_A_f = subs(Tau_num,A_f,x);
 
+Tau_y_A_f = subs(Tau_y_A_f,Theta_a,1);
+
+figure(3)
+subplot(4,1,1)
+plot(x,A_f_y,'.-');
+title('q(3) - A_f') 
+grid on
+
+subplot(4,1,2)
+plot(x,A_f_dot_y,'.-');
+title('dq(3) - dA_f') 
+grid on
+
+subplot(4,1,3)
+plot(x,A_f_double_dot_y,'.-');
+title('ddq(3) - ddA_f') 
+grid on
+
+subplot(4,1,4)
+plot(x,Tau_y_A_f(1,:),'.-');
+title('\tau') 
+grid on
